@@ -1,0 +1,28 @@
+{
+  "name": "powdee-skills",
+  "version": "0.2.0",
+  "description": "Agent skills for design systems and performance. Keep code, Storybook and Figma telling the same story about a component; find out where the time actually goes before optimising anything.",
+  "author": {
+    "name": "Powdee"
+  },
+  "repository": "https://github.com/Powdee/skills",
+  "license": "MIT",
+  "keywords": [
+    "design-systems",
+    "figma",
+    "storybook",
+    "design-to-code",
+    "design-tokens",
+    "performance",
+    "react",
+    "profiling",
+    "memoization",
+    "skills",
+    "claude-code",
+    "agent-skills"
+  ],
+  "skills": [
+    "./skills/design-engineering/",
+    "./skills/performance/"
+  ]
+}

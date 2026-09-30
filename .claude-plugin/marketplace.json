@@ -1,0 +1,17 @@
+{
+  "name": "powdee-skills",
+  "description": "Agent skills for design systems and performance, from Powdee.",
+  "owner": {
+    "name": "Powdee",
+    "url": "https://github.com/Powdee"
+  },
+  "plugins": [
+    {
+      "name": "powdee-skills",
+      "source": "./",
+      "description": "Keep code, Storybook and Figma telling the same story about a component; find out where the time actually goes before optimising anything.",
+      "category": "development",
+      "tags": ["design-systems", "figma", "storybook", "performance", "react"]
+    }
+  ]
+}
