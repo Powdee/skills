@@ -1,12 +1,14 @@
 # Powdee Skills
 
-Agent skills in two families, built on the same idea: **establish what is
+Agent skills in three families, built on the same idea: **establish what is
 actually true before acting on it.**
 
 - **[Design](#design)** — keep code, Storybook and Figma telling the same story
   about what a component does.
 - **[Performance](#performance)** — find out where the time actually goes before
   optimising anything.
+- **[Motion](#motion)** — turn a product into a code-built explainer: brief,
+  animation, voice-over and sound, video export.
 
 ## Install
 
@@ -28,7 +30,7 @@ claude plugin install powdee-skills@powdee-skills
 
 ```bash
 npx skills@latest add Powdee/skills            # pick from a list
-npx skills@latest add Powdee/skills -s '*'     # take all eight
+npx skills@latest add Powdee/skills -s '*'     # take all twelve
 ```
 
 **By hand:**
@@ -106,13 +108,56 @@ weight comparison and bundle composition scripts, a benchmark harness, a report
 template, and two references: the profile-review framework and the
 static-analysis recipes.
 
+## Motion
+
+`ultimate-motion-graphic`. A product explainer is usually a screen recording with
+music laid on top: it stutters, any change means recording it again, and the
+voice never quite lands on the click. These skills build the motion in code
+instead. A deterministic timeline drives the product's real UI, with a camera, a
+cursor, typing and counters. Any frame can be drawn on request, so the voice-over
+can be the clock the animation follows, and the export is frame-exact.
+
+**Run `/product-brief` first.** It learns the product and its brand from a landing
+page, the app or its repository, and writes the brief the other skills work from.
+
+| Skill | Invoked by | What it does |
+|---|---|---|
+| **`product-brief`** | you | Positioning, the flows worth showing, proof points marked real or illustrative, a brand kit with paste-ready tokens, and the questions only a human can answer. |
+| **`product-motion`** | you | Storyboard → `<motion-graphic>`: a hook, the product flows and an end card, built on a small engine with camera, cursor, chapters and reduced motion. Embeds in any page. |
+| **`motion-soundtrack`** | you | A voice-over script ready for ElevenLabs, sync to the recording, sound effects cued from the markup, ducked music, one mixed track. |
+| **`motion-export`** | you | Renders the motion frame by frame to MP4 (1080p or 4K, 30 or 60 fps) with its soundtrack. |
+
+Typical run:
+
+```
+/product-brief      https://example.com
+/product-motion     a 45-second "how it works" for the landing page
+/motion-soundtrack  the voice-over is in ~/Downloads/voice.mp3
+/motion-export      1080p, one file per language
+```
+
+What they insist on:
+
+- **The voice is the clock.** Retiming an animation to a recording never ends. A
+  dozen `[recording, storyboard]` pairs, with the engine easing between them, take
+  minutes and survive a new take.
+- **Sounds come from what causes them.** Effects are read out of the animation's
+  own markup, so they move when the animation moves. Sound matters, yet the repo
+  ships no audio: bring your own effects, or the skill generates a placeholder
+  kit (`make-sfx.py`). Music always comes from you.
+- **Demo data is a liability.** A real building, customer or address next to
+  invented numbers is the first thing the brief flags, together with every claim
+  the product cannot back yet.
+
 ## What's in the repo
 
 ```
-skills/design-engineering/   design-profile · des-eng · prompt-to-figma
-                             figma-to-component · design-components · design-tokens
-skills/performance/          perf-research · memoization
-.claude-plugin/              plugin.json · marketplace.json
+skills/design-engineering/       design-profile · des-eng · prompt-to-figma
+                                 figma-to-component · design-components · design-tokens
+skills/performance/              perf-research · memoization
+skills/ultimate-motion-graphic/  product-brief · product-motion · motion-soundtrack
+                                 motion-export
+.claude-plugin/                  plugin.json · marketplace.json
 ```
 
 The repo is its own marketplace, which is why `marketplace add Powdee/skills`
@@ -173,6 +218,10 @@ skills load themselves.
 The bundled scripts have no dependencies: the two design ones are stdlib Python,
 the four performance ones are Node ESM (`.mjs`, Node 18+). `bundle-report.mjs`
 and `domain-compare.mjs` additionally need a completed Next.js production build.
+
+The motion skills need Node 18+, Python 3 and a Chrome. Their `setup-tools.sh`
+installs Playwright and ffmpeg once into `~/.cache/ultimate-motion-graphic`,
+outside your project. A system ffmpeg is used when there is one.
 
 ## Licence
 

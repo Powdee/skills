@@ -1,0 +1,89 @@
+/* Base styles for <motion-graphic>. Product UI styles live next to your markup; this file only
+   carries the engine contract: the timeline effects, the scaled stage, the pointer and the player. */
+
+/* Timeline progress written by motion-engine.js. Non-inherited, so nested animated elements never
+   pick up a parent's progress. */
+@property --p { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --o { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --k { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --mg-spin { syntax: "<angle>"; inherits: true; initial-value: 0deg; }
+
+.mg { display: block; }
+.mg *, .mg *::before, .mg *::after { box-sizing: border-box; }
+.mg-frame { position: relative; overflow: hidden; cursor: pointer; }
+.mg-stage { position: absolute; top: 0; left: 0; overflow: hidden; transform: scale(var(--mg-scale, 1)); transform-origin: 0 0; }
+.mg-world { position: absolute; inset: 0; transform-origin: 0 0; }
+
+/* ——— Timeline effects ———
+   Elements with data-in fade in with --p; elements with data-out fade out with --o. Add an fx-*
+   class for the motion. Out-only elements count as already in. */
+.mg [data-out]:not([data-in]) { --p: 1; }
+.mg :is([data-in], [data-out]) { opacity: calc(var(--p) * (1 - var(--o))); }
+.mg .fx-up { transform: translateY(calc((1 - var(--p)) * 10px - var(--o) * 10px)); }
+.mg .fx-view { transform: translateX(calc((1 - var(--p)) * 64px - var(--o) * 64px)); }
+.mg .fx-pop { transform: scale(calc(0.6 + 0.4 * var(--p))); }
+.mg .fx-nudge { transform: translateX(calc((1 - var(--p)) * -8px)); }
+.mg .fx-settle { transform: scale(calc(1.06 - 0.06 * var(--p))); }
+.mg .fx-rise { transform: translateY(calc((1 - var(--p)) * 105%)); }
+.mg .fx-slide { opacity: 1; transform: translateX(calc((1 - var(--p)) * 100% - var(--o) * 100%)); }
+.mg .fx-draw { opacity: 1; stroke-dasharray: 1 1; stroke-dashoffset: calc(1 - var(--p)); } /* SVG path with pathLength="1" */
+.mg .fx-wipe { opacity: 1; transform: scaleX(var(--p)); transform-box: fill-box; transform-origin: 0 0; } /* rect inside an SVG <mask> */
+.mg .fx-bar { opacity: 1; transform: scaleY(var(--p)); transform-origin: 50% 100%; }
+.mg .fx-dim { opacity: calc(1 - 0.72 * var(--o)); }
+
+/* Title-card words rise out of their own clip; the padding keeps accents and descenders unclipped. */
+.mg-word { display: inline-block; margin: -0.1em -0.04em -0.16em; padding: 0.1em 0.04em 0.16em; overflow: hidden; vertical-align: top; }
+.mg-word > span { display: inline-block; }
+
+/* Typed text caret. */
+.mg-typed::after { content: ""; display: inline-block; width: 1.5px; height: 1.15em; margin-left: 1px; vertical-align: -0.2em; background: currentColor; animation: mg-caret 1s step-end infinite; }
+
+/* Gradient ring drawn around an element's perimeter from left to right (fill + border), then flowing.
+   Markup: <span class="mg-ring" data-in="0.1 1.1 io"><i></i></span> inside a position:relative box. */
+.mg-ring { position: absolute; inset: -2px; border-radius: inherit; pointer-events: none; }
+.mg .mg-ring {
+  opacity: 1; background: var(--mg-ring-fill, #fff);
+  -webkit-mask: linear-gradient(90deg, #000 calc(var(--p) * 120% - 32px), transparent calc(var(--p) * 120%));
+  mask: linear-gradient(90deg, #000 calc(var(--p) * 120% - 32px), transparent calc(var(--p) * 120%));
+}
+.mg-ring i {
+  position: absolute; inset: 0; padding: 2px; border-radius: inherit;
+  background: conic-gradient(from var(--mg-spin), var(--mg-ring-colors, #635bff, #ff4f86, #f7db5f, #635bff));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: mg-spin 4s linear infinite;
+}
+
+/* ——— Pointer ——— */
+.mg-cursor { position: absolute; top: 0; left: 0; z-index: 5; width: 26px; height: 26px; margin: -2.5px 0 0 -5px; opacity: 0; transform-origin: 5px 2.5px; pointer-events: none; filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.25)); }
+.mg-cursor path { fill: #171817; stroke: #fff; stroke-width: 1.5; stroke-linejoin: round; }
+.mg-ripple { position: absolute; top: 0; left: 0; z-index: 4; width: 44px; height: 44px; margin: -22px 0 0 -22px; border: 2px solid var(--mg-ripple, rgb(0 97 126 / 0.55)); border-radius: 50%; background: color-mix(in srgb, var(--mg-ripple, rgb(0 97 126)) 12%, transparent); opacity: 0; pointer-events: none; }
+
+/* ——— Player controls ——— */
+.mg-controls { display: flex; align-items: center; gap: 14px; height: 44px; padding: 0 14px; background: var(--mg-controls-bg, #032028); }
+.mg-controls button { display: grid; flex-shrink: 0; place-items: center; padding: 0; border: 0; cursor: pointer; }
+.mg-toggle { width: 28px; height: 28px; border-radius: 50%; background: #fff; color: var(--mg-controls-bg, #032028); }
+.mg-toggle svg, .mg-mute svg { display: none; width: 13px; height: 13px; }
+.mg:not([data-state]) .mg-icon-play,
+.mg[data-state="paused"] .mg-icon-play,
+.mg[data-state="playing"] .mg-icon-pause,
+.mg[data-state="ended"] .mg-icon-replay { display: block; }
+.mg-mute { width: 28px; height: 28px; border: 1px solid rgb(255 255 255 / 0.3) !important; border-radius: 50%; background: none; color: #fff; }
+.mg:not([data-muted]) .mg-icon-sound, .mg[data-muted] .mg-icon-muted { display: block; }
+.mg-chapters { display: flex; flex: 1; gap: 4px; }
+.mg .mg-chapter { display: flex; flex: var(--length, 1) 1 0; align-items: center; min-width: 0; height: 28px; background: none; }
+.mg-chapter > span { width: 100%; height: 3px; overflow: hidden; border-radius: 2px; background: rgb(255 255 255 / 0.22); transition: height 0.15s; }
+.mg-chapter:hover > span { height: 5px; }
+.mg-chapter i { display: block; height: 100%; background: #fff; transform: scaleX(var(--fill, 0)); transform-origin: 0 50%; }
+.mg :is(.mg-toggle, .mg-chapter, .mg-mute):focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+@keyframes mg-caret { 50% { opacity: 0; } }
+@keyframes mg-spin { to { --mg-spin: 360deg; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .mg-typed::after, .mg-ring i { animation: none; }
+}
+@media (max-width: 600px) {
+  .mg-controls { gap: 10px; height: 38px; padding: 0 10px; }
+  .mg-toggle, .mg-mute { width: 24px; height: 24px; }
+}
