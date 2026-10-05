@@ -1,0 +1,54 @@
+/* Generic timeline effects for the stage runtime (Stage.tsx).
+   --p (in), --o (out), --k (pulse) are written per element per frame and are
+   non-inherited, so nested animated elements never pick up a parent's value. */
+@property --p { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --o { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --k { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --spin { syntax: "<angle>"; inherits: true; initial-value: 0deg; }
+
+.mo { color: var(--mo-ink, #171817); font-family: var(--mo-font, "Helvetica Neue", Arial, sans-serif); }
+.mo *, .mo *::before, .mo *::after { box-sizing: border-box; }
+.mo :is(h1, h2, h3, h4, p, dl, dd, ol, ul, figure) { margin: 0; }
+.mo :is(ul, ol) { list-style: none; padding: 0; }
+
+.mo-world { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+.mo-overlay { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+
+/* In/out: opacity always follows --p and --o; fx-* adds the movement. */
+.mo [data-out]:not([data-in]) { --p: 1; }
+.mo :is([data-in], [data-out]) { opacity: calc(var(--p) * (1 - var(--o))); }
+.mo .fx-up { transform: translateY(calc((1 - var(--p)) * 10px - var(--o) * 10px)); }
+.mo .fx-view { transform: translateX(calc((1 - var(--p)) * 64px - var(--o) * 64px)); }
+.mo .fx-pop { transform: scale(calc(0.6 + 0.4 * var(--p))); }
+.mo .fx-nudge { transform: translateX(calc((1 - var(--p)) * -8px)); }
+.mo .fx-settle { transform: scale(calc(1.06 - 0.06 * var(--p))); }
+.mo .fx-rise { transform: translateY(calc((1 - var(--p)) * 105%)); }
+.mo .fx-slide { opacity: 1; transform: translateX(calc((1 - var(--p)) * 100% - var(--o) * 100%)); }
+.mo .fx-draw { opacity: 1; stroke-dasharray: 1 1; stroke-dashoffset: calc(1 - var(--p)); } /* SVG path with pathLength="1" */
+.mo .fx-wipe { opacity: 1; transform: scaleX(var(--p)); transform-box: fill-box; transform-origin: 0 0; }
+.mo .fx-bar { opacity: 1; transform: scaleY(var(--p)); transform-origin: 50% 100%; }
+.mo .fx-dim { opacity: calc(1 - 0.72 * var(--o)); }
+.mo .fx-press { transform: scale(calc(1 - 0.06 * var(--k))); }
+
+/* Time-driven loops (never CSS @keyframes: they run on wall-clock time). */
+.mo .fx-caret::after { content: ""; display: inline-block; width: 1.5px; height: 1.15em; margin-left: 1px; vertical-align: -0.2em; background: currentColor; opacity: var(--caret); }
+.mo .fx-shimmer { background: linear-gradient(90deg, #eceee9 0 40%, #f8f9f7 50%, #eceee9 60% 100%) 0 0 / 250% 100%; background-position: calc(100% - var(--shimmer) * 250%) 0; }
+.mo .fx-shimmer-text { color: transparent; background: linear-gradient(90deg, #737b7c 0 40%, #d2d6d4 50%, #737b7c 60% 100%) 0 0 / 250% 100%; background-position: calc(100% - var(--shimmer) * 250%) 0; -webkit-background-clip: text; background-clip: text; }
+.mo .fx-spin-border { background: conic-gradient(from var(--spin), var(--mo-glow-a, #635bff), var(--mo-glow-b, #ff4f86), var(--mo-glow-c, #f7db5f), var(--mo-glow-a, #635bff)); }
+
+/* Title cards (put them in the overlay) */
+.mo-titles { position: absolute; inset: 0; display: grid; place-items: center; padding: 0 60px; }
+.mo-title { grid-area: 1 / 1; font-size: 60px; font-weight: 400; line-height: 1.08; text-align: center; text-wrap: balance; }
+.is-portrait .mo-title { font-size: 54px; padding: 0 10px; }
+.mo-title-line { display: block; }
+.mo-title-line.is-soft { color: color-mix(in srgb, currentColor 46%, transparent); }
+/* Each word rises out of its own clip; the padding keeps accents and descenders unclipped. */
+.mo-word { display: inline-block; margin: -0.1em -0.04em -0.16em; padding: 0.1em 0.04em 0.16em; overflow: hidden; vertical-align: top; }
+.mo-word > span { display: inline-block; }
+.mo-backdrop { position: absolute; inset: 0; background: var(--mo-paper, #fbfbfa); }
+.mo-paper { background: radial-gradient(rgb(23 24 23 / 0.06) 0.8px, transparent 1px) 0 0 / 14px 14px, var(--mo-paper, #fbfbfa); }
+
+/* Pointer */
+.mo-cursor { position: absolute; top: 0; left: 0; z-index: 5; width: 26px; height: 26px; margin: -2.5px 0 0 -5px; opacity: 0; transform-origin: 5px 2.5px; filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.25)); }
+.mo-cursor path { fill: #171817; stroke: #fff; stroke-width: 1.5; stroke-linejoin: round; }
+.mo-ripple { position: absolute; top: 0; left: 0; z-index: 4; width: 44px; height: 44px; margin: -22px 0 0 -22px; border: 2px solid var(--mo-accent-55, rgb(0 97 126 / 0.55)); border-radius: 50%; background: var(--mo-accent-10, rgb(0 97 126 / 0.1)); opacity: 0; }

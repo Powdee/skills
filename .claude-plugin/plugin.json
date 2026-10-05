@@ -1,7 +1,7 @@
 {
   "name": "powdee-skills",
-  "version": "0.3.0",
-  "description": "Agent skills for design systems, performance and product motion. Keep code, Storybook and Figma telling the same story about a component; find out where the time actually goes before optimising anything; turn a product into a code-built explainer with voice-over, sound and a frame-exact video export.",
+  "version": "0.4.0",
+  "description": "Agent skills for design systems, performance and product motion. Keep code, Storybook and Figma telling the same story about a component; find out where the time actually goes before optimising anything; turn a product into a code-built motion film, synced to its voice-over and rendered in 16:9 and 9:16.",
   "author": {
     "name": "Powdee"
   },
@@ -21,7 +21,8 @@
     "explainer-video",
     "voice-over",
     "sound-design",
-    "video-export",
+    "remotion",
+    "video",
     "skills",
     "claude-code",
     "agent-skills"
@@ -29,6 +30,6 @@
   "skills": [
     "./skills/design-engineering/",
     "./skills/performance/",
-    "./skills/ultimate-motion-graphic/"
+    "./skills/ultimate-motion/"
   ]
 }

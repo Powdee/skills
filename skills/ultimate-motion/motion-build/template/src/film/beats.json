@@ -1,0 +1,15 @@
+{
+  "language": "en",
+  "beats": [
+    { "story": -6, "say": "Your quarterly report?" },
+    { "story": -4.75, "say": "Version seven of final" },
+    { "story": -2.65, "say": "There's a better way" },
+    { "story": 1.25, "say": "Which accounts need attention first" },
+    { "story": 3.4, "say": "It ranks every account by risk" },
+    { "story": 7.6, "say": "Northwind Retail needs it most" },
+    { "story": 9.2, "say": "health thirty-eight out of a hundred" },
+    { "story": 10.2, "say": "usage is falling" },
+    { "story": 12.4, "say": "and it tells you why" },
+    { "story": 16.2, "say": "Every account, one clear answer" }
+  ]
+}
