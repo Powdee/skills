@@ -7,8 +7,8 @@ actually true before acting on it.**
   about what a component does.
 - **[Performance](#performance)** — find out where the time actually goes before
   optimising anything.
-- **[Motion](#motion)** — turn a product into a code-built explainer: brief,
-  animation, voice-over and sound, video export.
+- **[Motion](#motion)** — turn a product into a code-built motion film: brief,
+  script, animation, voice sync and sound, 16:9 and 9:16 video.
 
 ## Install
 
@@ -30,7 +30,7 @@ claude plugin install powdee-skills@powdee-skills
 
 ```bash
 npx skills@latest add Powdee/skills            # pick from a list
-npx skills@latest add Powdee/skills -s '*'     # take all twelve
+npx skills@latest add Powdee/skills -s '*'     # take all fourteen
 ```
 
 **By hand:**
@@ -110,44 +110,49 @@ static-analysis recipes.
 
 ## Motion
 
-`ultimate-motion-graphic`. A product explainer is usually a screen recording with
-music laid on top: it stutters, any change means recording it again, and the
-voice never quite lands on the click. These skills build the motion in code
-instead. A deterministic timeline drives the product's real UI, with a camera, a
-cursor, typing and counters. Any frame can be drawn on request, so the voice-over
-can be the clock the animation follows, and the export is frame-exact.
+`ultimate-motion`. A product explainer is usually a screen recording with music
+laid on top: it stutters, any change means recording it again, and the voice
+never quite lands on the click. These skills build the film in code instead. The
+product's real UI, copy and data are recreated on a stage, and a deterministic
+timeline drives it: a camera between named targets, a cursor that clicks, typed
+prompts, counted numbers, re-sorting rows and drawing charts. Title cards set up
+the pain and an end card pays it off. Every frame is a pure function of time, so
+the voice-over can be the clock the animation follows, and Remotion renders it
+frame-exact in 16:9 and 9:16.
 
-**Run `/product-brief` first.** It learns the product and its brand from a landing
-page, the app or its repository, and writes the brief the other skills work from.
+**Run `/ultimate-motion`.** It asks what it can't learn from the product, then
+calls the five stages in order and stops at each checkpoint.
 
 | Skill | Invoked by | What it does |
 |---|---|---|
-| **`product-brief`** | you | Positioning, the flows worth showing, proof points marked real or illustrative, a brand kit with paste-ready tokens, and the questions only a human can answer. |
-| **`product-motion`** | you | Storyboard → `<motion-graphic>`: a hook, the product flows and an end card, built on a small engine with camera, cursor, chapters and reduced motion. Embeds in any page. |
-| **`motion-soundtrack`** | you | A voice-over script ready for ElevenLabs, sync to the recording, sound effects cued from the markup, ducked music, one mixed track. |
-| **`motion-export`** | you | Renders the motion frame by frame to MP4 (1080p or 4K, 30 or 60 fps) with its soundtrack. |
+| **`ultimate-motion`** | you | The orchestrator. Intake once, then brief → script → build → audio → render, with a human gate after the brief, the script and the stills. |
+| **`motion-brief`** | the orchestrator | Reads the landing page, app code and demo data; pulls brand tokens, fonts and logos (`extract_brand.py`); picks the pain, the turn and 3–6 product moments, real copy and numbers marked real or illustrative. |
+| **`motion-script`** | the orchestrator | The voice-over script for you to record or generate (ElevenLabs), and `beats.json`: the story time each line starts. Ships the Revitamal film as a worked example. |
+| **`motion-build`** | the orchestrator | Scaffolds a Remotion project with the stage engine and a complete example film, recreates the product UI, title cards and end card, camera and cursor, with a separate camera path for 9:16. |
+| **`motion-audio`** | the orchestrator | Finds each beat in your recording with whisper word timings and writes the sync map; ducked music; sound effects cued in story time so they follow the picture. |
+| **`motion-render`** | the orchestrator | Renders both formats, sets loudness with one clean gain (−14 LUFS social, −16 web), contact sheets for QA. |
 
 Typical run:
 
 ```
-/product-brief      https://example.com
-/product-motion     a 45-second "how it works" for the landing page
-/motion-soundtrack  the voice-over is in ~/Downloads/voice.mp3
-/motion-export      1080p, one file per language
+/ultimate-motion  a 45-second "how it works" for our landing page, repo is ~/code/app
+                  …the script comes back; record it, then:
+                  the voice-over is in ~/Downloads/voice.mp3
 ```
 
 What they insist on:
 
-- **The voice is the clock.** Retiming an animation to a recording never ends. A
-  dozen `[recording, storyboard]` pairs, with the engine easing between them, take
-  minutes and survive a new take.
-- **Sounds come from what causes them.** Effects are read out of the animation's
-  own markup, so they move when the animation moves. Sound matters, yet the repo
-  ships no audio: bring your own effects, or the skill generates a placeholder
-  kit (`make-sfx.py`). Music always comes from you.
-- **Demo data is a liability.** A real building, customer or address next to
-  invented numbers is the first thing the brief flags, together with every claim
-  the product cannot back yet.
+- **The voice is the clock.** Animation timings live on the film's own story
+  clock. A dozen `[voice, story]` pairs, found in the recording automatically,
+  map one onto the other, so a new take is a re-sync, not a re-edit.
+- **Real product, real words.** Labels, numbers and names come from the product.
+  Example data is marked on screen, and nothing claims what the product can't back.
+- **Deterministic or nothing.** No CSS animations or transitions, no randomness,
+  no wall clock. Loops such as carets and shimmer are derived from story time, so
+  the render matches the preview frame for frame.
+- **Sound is yours.** The repo ships no audio. Voice, music and effects come from
+  you, and missing effect files are skipped, so a film renders silently until they
+  exist.
 
 ## What's in the repo
 
@@ -155,8 +160,8 @@ What they insist on:
 skills/design-engineering/       design-profile · des-eng · prompt-to-figma
                                  figma-to-component · design-components · design-tokens
 skills/performance/              perf-research · memoization
-skills/ultimate-motion-graphic/  product-brief · product-motion · motion-soundtrack
-                                 motion-export
+skills/ultimate-motion/          ultimate-motion · motion-brief · motion-script
+                                 motion-build · motion-audio · motion-render
 .claude-plugin/                  plugin.json · marketplace.json
 ```
 
@@ -219,9 +224,11 @@ The bundled scripts have no dependencies: the two design ones are stdlib Python,
 the four performance ones are Node ESM (`.mjs`, Node 18+). `bundle-report.mjs`
 and `domain-compare.mjs` additionally need a completed Next.js production build.
 
-The motion skills need Node 18+, Python 3 and a Chrome. Their `setup-tools.sh`
-installs Playwright and ffmpeg once into `~/.cache/ultimate-motion-graphic`,
-outside your project. A system ffmpeg is used when there is one.
+The motion skills need Node 18+, Python 3 and ffmpeg. `new_film.sh` installs
+Remotion into each film project and a small Python venv (numpy) beside it. Remotion
+fetches its own headless Chrome on first render. Voice sync additionally needs
+whisper.cpp (`brew install whisper-cpp`) and the large-v3-turbo model in
+`~/.cache/whisper-cpp/`.
 
 ## Licence
 

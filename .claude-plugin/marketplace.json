@@ -9,9 +9,9 @@
     {
       "name": "powdee-skills",
       "source": "./",
-      "description": "Keep code, Storybook and Figma telling the same story about a component; find out where the time actually goes before optimising anything; turn a product into a code-built explainer video.",
+      "description": "Keep code, Storybook and Figma telling the same story about a component; find out where the time actually goes before optimising anything; turn a product into a code-built motion film in 16:9 and 9:16.",
       "category": "development",
-      "tags": ["design-systems", "figma", "storybook", "performance", "react", "motion-graphics", "video"]
+      "tags": ["design-systems", "figma", "storybook", "performance", "react", "motion-graphics", "video", "remotion"]
     }
   ]
 }
