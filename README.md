@@ -1,6 +1,6 @@
 # Powdee Skills
 
-Agent skills in three families, built on the same idea: **establish what is
+Agent skills in four families, built on the same idea: **establish what is
 actually true before acting on it.**
 
 - **[Design](#design)** — keep code, Storybook and Figma telling the same story
@@ -9,6 +9,8 @@ actually true before acting on it.**
   optimising anything.
 - **[Motion](#motion)** — turn a product into a code-built motion film: brief,
   script, animation, voice sync and sound, 16:9 and 9:16 video.
+- **[Reels](#reels)** — caption camera footage with kinetic typography timed to
+  your voice-over, ready for the phone.
 
 ## Install
 
@@ -30,7 +32,7 @@ claude plugin install powdee-skills@powdee-skills
 
 ```bash
 npx skills@latest add Powdee/skills            # pick from a list
-npx skills@latest add Powdee/skills -s '*'     # take all fourteen
+npx skills@latest add Powdee/skills -s '*'     # take all fifteen
 ```
 
 **By hand:**
@@ -154,6 +156,41 @@ What they insist on:
   you, and missing effect files are skipped, so a film renders silently until they
   exist.
 
+## Reels
+
+`insta-caption-reel`. Captions on a talking-head reel are usually one font, one
+size, one colour, and they arrive a beat late. This skill gives every reel the
+same designed look instead: big uppercase words that pop in exactly on the voice,
+in three faces with distinct jobs (Hellix italic carries the line, Bodoni italic
+softens, stencil punches), in two solid colours, with font cycling on the key
+beat, hard punch-ins on the payoff words and a shake on the clap. The voice-over
+is yours and usually arrives after the footage; the skill times every word from
+it, cuts your clips inside its pauses and renders 1080×1920 for the phone (or
+16:9) with the camera audio muted.
+
+| Skill | Invoked by | What it does |
+|---|---|---|
+| **`insta-caption-reel`** | you | Clips + script now, voice-over later → word timings (`align.py`), captions written to a fixed style guide, `reel.py check` / `qa` / `render`. Ships the Revitamal reel as a worked example. |
+
+Typical run:
+
+```
+/insta-caption-reel  ~/Downloads/intro.mov then ~/Downloads/think.mov, phone format,
+                     script: "[laughs] Hey — this is me, I'm building a startup…"
+                     …later: the voice-over is in ~/Downloads/voice.mp3
+```
+
+What it insists on:
+
+- **The voice is the clock.** Every word appears on its own start time, found in
+  your recording; clips cut inside its pauses; the film ends two seconds after
+  the last word.
+- **One look, every time.** Faces, colours, sizes, motion and safe zones are fixed
+  in `references/style.md`; only the split of the words into captions changes.
+- **Look before render.** `reel.py qa` draws every caption and every font-cycle
+  step with the Reels UI zones marked, and `check` refuses captions that don't
+  match what the voice says.
+
 ## What's in the repo
 
 ```
@@ -162,6 +199,7 @@ skills/design-engineering/       design-profile · des-eng · prompt-to-figma
 skills/performance/              perf-research · memoization
 skills/ultimate-motion/          ultimate-motion · motion-brief · motion-script
                                  motion-build · motion-audio · motion-render
+skills/reels/                    insta-caption-reel
 .claude-plugin/                  plugin.json · marketplace.json
 ```
 
@@ -229,6 +267,12 @@ Remotion into each film project and a small Python venv (numpy) beside it. Remot
 fetches its own headless Chrome on first render. Voice sync additionally needs
 whisper.cpp (`brew install whisper-cpp`) and the large-v3-turbo model in
 `~/.cache/whisper-cpp/`.
+
+`insta-caption-reel` needs Python 3 with Pillow, ffmpeg and the same whisper.cpp
+model. It bundles Libre Bodoni and Big Shoulders Stencil (OFL). Hellix is a
+commercial typeface and is **not** in the repo: put your licensed
+`Hellix-Bold.ttf` in the skill's `fonts/` folder (the folder's README shows how
+to convert a `.woff2`).
 
 ## Licence
 

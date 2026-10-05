@@ -1,0 +1,34 @@
+{
+  "format": "vertical",
+  "voice": "~/Downloads/ElevenLabs_2026-10-05T17_57_05_Me_ivc_sp100_s50_sb75_v4.mp3",
+  "words": "words.json",
+  "clips": [
+    {"src": "~/Downloads/intro.mov", "in": 0, "out": 6.2, "face": [1067, 440]},
+    {"src": "~/Downloads/think .mov", "in": 2.26, "face": [1080, 460]}
+  ],
+  "captions": [
+    {"lines": ["right | HEY:HI330L"]},
+    {"lines": ["center | THIS:HI170L IS:HI170L", "center | ME:HI280D"],
+     "alts": [["center | THIS:SI210D", "center | IS:SI210L ME:SI210L"],
+              ["center | THIS:ST170L IS:ST170D", "center | ME:ST240L"]],
+     "cycle": {"after": 0.18, "step": 0.1, "seq": [1, 2, 0]}},
+    {"lines": ["right | I’M:HI150L BUILDING:HI150D", "left | a:HI140L STARTUP:SI190D"]},
+    {"lines": ["left | CALLED:SI150L", "center | REVITAMAL:HU200D"]},
+    {"lines": ["right | FROM:HI170L", "right | SCRATCH:HI230L"]},
+    {"lines": ["center | AGAIN:HI300L"], "end": "cut",
+     "alts": [["center | AGAIN:SI330L"], ["center | AGAIN:ST380L"]],
+     "cycle": {"after": 0.1, "step": 0.1, "seq": [1, 2, 0, 1, 2]}},
+    {"lines": ["right | HOW:SI130L DID:SI130L I:SI130L", "right | EVEN:HI140L GET:HI140L", "right | HERE?:HI210D"]},
+    {"lines": ["left | I:HI100L SHOULD:HI100L BE:HI100L OUT:HI100L", "left | RUNNING:ST300L"]},
+    {"lines": ["right | RIGHT:HI210L", "right | NOW:SI260D"]},
+    {"lines": ["left | AND:SI190D", "left | INSTEAD?:HI190L"]},
+    {"lines": ["right | SITTING:HI110L HERE:HI110L", "right | WONDERING:SI210D"]},
+    {"lines": ["center | WHAT’S:HI120L FOR:HI120L", "center | DINNER:ST320D"], "end": 12.75},
+    {"lines": ["right | ALRIGHT:HI240L"]},
+    {"lines": ["left | LET’S:HI160L", "left | GO:HI270D"]},
+    {"lines": ["left | BACK:SI200D", "right | TO:ST290L WORK:ST290L"]}
+  ],
+  "punches": [[5.40, 6.2, 1.10], [12.12, 12.75, 1.08], [13.92, 14.61, 1.10], [14.94, null, 1.12]],
+  "shakes": [12.75],
+  "output": "revitamal-us-vertical.mp4"
+}
