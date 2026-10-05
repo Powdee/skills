@@ -5,7 +5,12 @@ description: Turns your camera clips plus a voice-over you supply (usually an El
 
 # Insta caption reel
 
-Every reel gets exactly the same caption look. Read `references/style.md` before writing captions; `examples/revitamal-us-vertical.json` is the finished reference reel. The voice drives the timing, and the engine (`scripts/reel.py`) does the layout, animation, camera and audio.
+Every reel gets exactly the same caption look. Before writing captions:
+
+- read `references/style.md`;
+- look at `references/storyboard.jpg`, the original storyboard the style was made from (style.md explains how to read it).
+
+`examples/revitamal-us-vertical.json` is the finished reference reel. The voice drives the timing, and the engine (`scripts/reel.py`) does the layout, animation, camera and audio.
 
 **Needs:** ffmpeg, `whisper-cli` with `~/.cache/whisper-cpp/ggml-large-v3-turbo.bin` (`brew install whisper-cpp`), and `python3` with Pillow. Libre Bodoni and Big Shoulders Stencil are bundled in `fonts/` (OFL). **Hellix is commercial and not bundled**: put your licensed `Hellix-Bold.ttf` in `fonts/`; see `fonts/README.md`.
 
