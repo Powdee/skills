@@ -2,6 +2,30 @@
 
 Every reel uses this exact look. It comes from the storyboard for the Revitamal "this is me" reel (Oct 2026). Don't invent new colours, fonts or effects. Use `../examples/revitamal-us-vertical.json` as the reference for how captions are split.
 
+## The storyboard
+
+`storyboard.jpg` is the original design. Look at it before writing captions.
+
+**How to read it:**
+
+- Each column is one shot, in story order:
+  - the left and middle columns are the intro shot (typing at the laptop);
+  - the right column is the thinking shot.
+- Reading down a column is time passing, except where one phrase repeats. THIS IS ME ×3 and AGAIN ×3 are the **three faces that phrase cycles through**. They become `alts` + `cycle`.
+
+**Take from it:**
+
+- the three faces and their jobs;
+- the two colours, with `#032028` picking out single words (ME, BUILDING, STARTUP, THIS, IS);
+- the scale: captions fill the upper third of the frame;
+- the placement: off-centre beside or above the head, often right-aligned, with the scattered "I’M BUILDING / a / STARTUP";
+- no punctuation and the lowercase `a`.
+
+**Don't copy:**
+
+- **The wording:** "LEt’S GET" is a placeholder; the voice decides what the captions say.
+- **The positions, when rendering vertical:** the storyboard is 16:9. In 9:16 everything moves into the zone above the head.
+
 ## Colours: two only, always solid
 
 | Token | Hex | Use |

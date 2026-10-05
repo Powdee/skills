@@ -170,7 +170,7 @@ it, cuts your clips inside its pauses and renders 1080×1920 for the phone (or
 
 | Skill | Invoked by | What it does |
 |---|---|---|
-| **`insta-caption-reel`** | you | Clips + script now, voice-over later → word timings (`align.py`), captions written to a fixed style guide, `reel.py check` / `qa` / `render`. Ships the Revitamal reel as a worked example. |
+| **`insta-caption-reel`** | you | Clips + script now, voice-over later → word timings (`align.py`), captions written to a fixed style guide, `reel.py check` / `qa` / `render`. Ships the storyboard the style was designed from and the Revitamal reel as a worked example. |
 
 Typical run:
 
