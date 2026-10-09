@@ -1,14 +1,23 @@
 ---
 name: des-eng
-description: "End-to-end design flow: discover a component's real states from the code, build them in Storybook, mirror them in Figma, then wire them to the business logic — stopping for approval between every stage. Trigger when asked to add or change a UI surface across design and code together, e.g. '/des-eng <figma-url> add the confirmation dialog for checkout'."
+description: "Design and implement UI across code, Storybook, and Figma from discovery through implementation and validation without routine approval pauses. Use for UI work spanning design and code, or to implement changes from selected Figma frames in an existing app. For an edited Figma design, use implement-Figma-changes mode to preserve the source design while updating the implementation."
 disable-model-invocation: false
 ---
 
-# /des-eng — code ↔ Storybook ↔ Figma, gated
+# /des-eng — code ↔ Storybook ↔ Figma
 
-Four gated stages, bracketed by a read-the-ask step and a hard stop. This flow
-adds the two things a design-to-code skill usually skips: **state discovery from the running code**, and **wiring the
+Complete the applicable stages in one continuous workflow. This flow includes **state discovery from the running code**, and **wiring the
 finished component to real business logic**.
+
+## Choose the direction
+
+When the request says **Mode: implement Figma changes**, asks to implement an
+edited Figma selection, or comes from the Send to Codex plugin, read
+[Implement Figma changes](references/implement-figma-changes.md) and follow that
+mode instead of the numbered stages below. It keeps the source Figma selection
+as the visual target while implementing and validating the changes without redrawing it.
+
+For other design-and-code work, follow the original workflow below.
 
 ## Before the first run
 
@@ -19,44 +28,66 @@ that package, and your conventions file if you have one.
 **Read `.claude/design-profile.md`.** If it exists, those facts are in it —
 along with the token vocabulary, the story-title roots and the testing
 convention. If it does not exist, run **`/design-profile`** first; it probes the
-repo, confirms the ambiguous parts with you, and writes the file. It takes a
-minute and it is the difference between this flow fitting your repo and this
-flow guessing at it.
+repo and writes the file. Infer routine choices from repository evidence and
+record assumptions; ask only for essential information that cannot be inferred.
 
 Placeholders below (`<ui-package>`, `<ui-barrel>`, `<check-cmd>`,
 `<conventions>`) all resolve from that profile.
 
-## Why this is a skill and not an agent
+## Storybook availability
 
-Every stage ends in a human gate. A subagent cannot stop and ask — it reports
-once, at the end — so a `/des-eng` subagent would sail through the gates and
-hand back a finished board built on a misread brief. This skill therefore runs
-**in the main thread**, and delegates to subagents only for read-heavy work with
-no judgement in it (see [Delegation](#delegation)).
+Check the owning package and any shared workspace harness for an existing
+Storybook setup (configuration, package scripts/dependencies, and stories).
+If Storybook is absent, skip all Storybook work and the stories checkpoint:
+do not install or initialize it, create stories, run Storybook commands, or
+require story URLs or story-to-Figma name matching. Mark those checklist items
+as not applicable. A configured but broken or stopped Storybook is not absent.
+
+Keep component implementation, state discovery, token reuse, and the repo's
+normal checks. Verify reachable states through the running app or its existing
+preview/test harness, and use the code-backed state table for state coverage
+and Figma frame names. This rule applies to both workflow modes below.
+
+## Execution mode
+
+Proceed through discovery, components, stories, applicable Figma work, integration,
+and validation without asking for scope, copy, visual, or stage-completion approval.
+Checkpoints are self-checks and progress updates, not requests to wait for a reply.
+Apply the same approach to routine review pauses in companion design skills.
+
+Resolve routine choices from repository conventions and the supplied design,
+record material assumptions, and fix issues found during verification. Revisit
+earlier stages as necessary without stopping for approval. If the user explicitly
+requests a review pause or a narrower deliverable, respect that request.
+
+Ask only when missing information materially blocks the work and cannot be
+inferred; continue independent work while waiting. This workflow does not change
+system/tool permission checks or authorize unrelated changes, destructive actions,
+or publication. Keep existing commit/push/PR boundaries below.
 
 ## The contract that makes the whole thing checkable
 
-**A Storybook story export and its Figma frame share a name.** If the export is
+**When Storybook is present, a story export and its Figma frame share a name.** If the export is
 `SavedWithWarnings`, the frame is `SavedWithWarnings`. Nothing enforces this, so
 the skill does: every frame it draws is named for the export it mirrors, and it
 reports any pre-existing frame that isn't.
 
-Corollary: **Storybook is the source of truth for what states exist.** Not the
-Figma board, not a screenshot, not memory.
+When Storybook is present, its stories record the reachable states discovered
+from code. Without Storybook, use the code-backed state table and app verification;
+the Figma board or a screenshot alone cannot establish reachability.
 
 ## STAGE 0 — Read the ask
 
 First check that `.claude/design-profile.md` exists; if not, run
 `/design-profile` before going further.
 
-Then, three things. Ask for whatever is missing; do not guess:
+Establish these facts from the request and repository; ask only for blocking gaps:
 
 - **The Figma page URL** (with `node-id`) — where frames get drawn.
 - **What to build** — "the save dialog", "the summary card".
 - **Which app or package owns it.**
 
-Then state back, in two or three lines, what you understood. Cheapest gate in
-the flow.
+Briefly state the scope and proceed without waiting for confirmation.
 
 ## STAGE 1 — Discover the states from the code
 
@@ -90,13 +121,16 @@ Watch for two traps worth naming explicitly:
   consumer on the render path. Build stories from the actual branches, not from
   the type that looks authoritative.
 
-### ◆ GATE 1 — the state list
+### Checkpoint 1 — the state list
 
-Show the table. Ask explicitly whether any state is missing or any "unreachable"
-call is wrong. **Nothing is drawn or written until this is confirmed** — every
-later stage is sized by this list.
+Validate the table against the code, report material uncertainties, and proceed
+to implementation. Do not require confirmation of the state list.
 
-## STAGE 2 — Storybook
+## STAGE 2 — Components and optional Storybook
+
+Implement components using the rules below. When Storybook is absent, skip the
+story-specific bullets and Checkpoint 2, run the normal package checks, and
+verify the components through the app or existing harness.
 
 - **Reuse first.** Grep `<ui-barrel>` before creating anything; a variant of an
   existing component is props, not a fork. Re-implementing a headless primitive
@@ -104,25 +138,26 @@ later stage is sized by this list.
 - Components are **dumb**: props in, JSX out. No fetching, no stores, no routing.
 - **One story per state from STAGE 1**, named so the Figma frame can match.
 - Portaled surfaces (dialog, drawer, popover) need a story where they are open.
-- Design tokens only — no hex literals. A value with no token **stops the flow**
-  and is raised, never inlined.
+- Design tokens only — no inline hex literals. Reuse an appropriate token or add
+  a justified token through the repository’s established token system. Record the
+  choice and continue; missing tokens do not create an automatic approval pause.
 - Follow the repo's own testing convention for this layer, whatever it is. If
   the shared package uses Storybook as its only harness, do not add tests to it.
 
 Then run `<check-cmd>`.
 
-### ◆ GATE 2 — the stories
+### Checkpoint 2 — the stories
 
-Give the Storybook URL per story and say which states they cover. Ask for copy
-corrections **here**, before Figma — copy fixed after the board is drawn costs
-three edits instead of one.
+Inspect the stories, correct copy against the brief, and verify state coverage.
+Give the story URLs as progress evidence and continue to the applicable next stage.
 
 ## STAGE 3 — Figma
 
 Load the Figma plugin-API skill (`/figma-use`, or the MCP resource
 `skill://figma/figma-use/SKILL.md`) before any `use_figma` call. On top of it:
 
-- **Frame name == story export name.** Exactly. This is the contract.
+- With Storybook, **frame name == story export name**. Without it, name frames
+  for the corresponding states in the code-backed state table.
 - Pull design tokens **live** from the source of truth this run — never from
   memory, never from an earlier conversation.
 - Values the code computes (a `color-mix()`, a derived shade) resolve to one
@@ -135,13 +170,14 @@ Load the Figma plugin-API skill (`/figma-use`, or the MCP resource
   points at.
 - Screenshot every frame before showing it.
 
-### ◆ GATE 3 — the board
+### Checkpoint 3 — the board
 
 Post the screenshots and the node-ids. Report drift found on the way: any
 existing frame whose name doesn't match its story export, and any state on the
 board that STAGE 1 found unreachable. State plainly what is representative
 rather than reproduced — placeholder art, unmeasured spacing, runtime behaviours
-like sticky columns or scroll that a static frame cannot show.
+like sticky columns or scroll that a static frame cannot show. Resolve in-scope
+drift and proceed without waiting for visual approval.
 
 ## STAGE 4 — Wire it to the business logic
 
@@ -157,15 +193,15 @@ Now, and only now, the app. Ordinary feature work under `<conventions>`:
   a comment is literally true at HEAD; every fix is applied to its structural
   twins; no drafting narration, plan tokens or review citations left in the code.
 
-If wiring reveals a state STAGE 1 missed, **go back to GATE 1** with it. Do not
-resolve it by inventing a value or quietly adding a story.
+If wiring reveals a state STAGE 1 missed, update the state table, supporting
+evidence, stories when Storybook is present, and applicable Figma frames, then continue through validation.
 
-### ◆ GATE 4 — the diff
+### Checkpoint 4 — the diff
 
 Summarise what changed, the preflight numbers, and anything deliberately left
-out. Then **stop.**
+out. Finish only once the requested work and relevant checks are complete.
 
-## STAGE 5 — Stop
+## STAGE 5 — Final handoff
 
 Do not commit, push, or open a PR unless asked. Shipping is a separate, explicit
 decision.
@@ -180,7 +216,7 @@ output is a conclusion, not a dump:
 | Figma board recon (node ids, frame names, bound styles) | Building the brief |
 | Codebase sweeps for state evidence | Deciding which states are reachable |
 | Storybook ↔ Figma name diffing | Drawing and editing frames |
-| Prior-PR and git-history context | Every gate |
+| Prior-PR and git-history context | Scope and final verification |
 
 A board's node tree is thousands of tokens of JSON to find six ids — that is
 exactly what a subagent is for. Ask it for the inventory, not the tree.
@@ -191,8 +227,8 @@ cheap check that confirms it is usually one command.
 
 ## Redirect
 
-A gate can come back "no". That is not an error, it is the flow working. Route
-it to the stage that owns the question:
+When verification or user feedback reveals a problem, return to the stage
+that owns it, make the correction, and continue:
 
 - wrong states → STAGE 1
 - wrong copy or missing story → STAGE 2
@@ -209,14 +245,15 @@ committed.
 - [ ] Figma URL, what to build, and owning workspace all known — not guessed.
 - [ ] States discovered from code, each with `file:line` evidence.
 - [ ] Unreachable states listed with the reason they can't happen.
-- [ ] GATE 1 confirmed before anything was drawn or written.
+- [ ] State table checked against code before implementation.
 - [ ] Existing primitives reused; nothing re-implemented.
-- [ ] One story per reachable state; the layer's testing convention respected.
-- [ ] GATE 2 confirmed before Figma was touched.
+- [ ] Storybook availability checked; story work/checkpoint marked not applicable if absent.
+- [ ] With Storybook: one story per reachable state, stories inspected, and copy checked.
+- [ ] Without Storybook: reachable states and copy verified in the app or existing harness.
 - [ ] Figma plugin-API skill loaded before any `use_figma` call.
 - [ ] Tokens pulled live this run.
-- [ ] Every frame named exactly for its story export; drift reported.
+- [ ] Frames match story exports when present, otherwise state-table names; drift reported.
 - [ ] Iterated in place — nothing deleted and recreated.
-- [ ] GATE 3 confirmed before the app was wired.
+- [ ] Applicable Figma work verified before the app was wired.
 - [ ] App work branched, test-first, preflight green on every consuming workspace.
 - [ ] Nothing committed or pushed.

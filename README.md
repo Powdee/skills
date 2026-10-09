@@ -63,7 +63,7 @@ placeholders and guess at your layout.
 | Skill | Invoked by | What it does |
 |---|---|---|
 | **`design-profile`** | you | Learns the repo's conventions and writes them down. Run first, re-run when things move. |
-| **`des-eng`** | you | The orchestrator. Discover states from the code → build them in Storybook → mirror them in Figma → wire to business logic. Four stages, a human gate after each. |
+| **`des-eng`** | you | The orchestrator. Discover states from code → implement and verify components → perform applicable Figma work → wire business logic. Uses Storybook when present; otherwise skips its work/checkpoint and verifies in the app. Supports implementing Figma changes without redrawing the source design; no routine approval pauses. |
 | **`prompt-to-figma`** | you | Prompt, sketch, or shipping component → a Figma board. Produces a design, not code. |
 | **`figma-to-component`** | you | A Figma node → local components with stories. Stops before commit. |
 | **`design-components`** | the model | House rules for writing a component: variant maps, complete state binding, compound components, focus rings, props vs `className`. |
@@ -209,8 +209,9 @@ different things: the first is where to look, the second is what to install.
 
 ## Two ideas worth stealing even if you don't adopt the skills
 
-**The naming contract.** A Storybook story export and its Figma frame share a
-name. That one rule turns "is the design up to date?" from a discussion into a
+**The naming contract.** When Storybook is present, a story export and its Figma
+frame share a name. Without Storybook, des-eng uses its code-backed state table
+for frame names and verifies the UI in the app or existing harness. That one rule turns "is the design up to date?" from a discussion into a
 set difference you can compute. Nothing enforces it, so the skills do — and they
 report the mismatches they find rather than quietly fixing them.
 
@@ -222,17 +223,18 @@ survives review because nothing about it looks wrong. Establishing the list from
 the code, with `file:line` evidence, before anything is drawn, is the single
 highest-value step in the flow.
 
-## Why gates, and why not agents
+## Reviews and delegation
 
-Every stage ends with a human deciding. That is deliberate: a subagent can't stop
-and ask — it reports once, at the end — so an autonomous version of this would
-hand back a finished board built on a misread brief. The skills run in the main
-thread and delegate only read-heavy work with no judgement in it: board recon,
-codebase sweeps, name diffing.
+`des-eng` completes discovery, implementation, and validation without routine
+approval pauses. Its checkpoints are self-checks and progress updates; explicit
+user requests for a review pause still apply. When Storybook is absent, its work
+and checkpoint are skipped without installing it. Other skills retain their own
+review rules when invoked independently.
 
-The gates sit immediately before the expensive-to-undo step, not at the end. A
-redirect at the brief costs one exchange; at the plan, a table; after merge, a
-revert plus a stale board plus a token nobody can trace.
+The main thread keeps scope decisions and final verification. Read-heavy work
+such as board reconnaissance, codebase sweeps, and name comparisons may be
+delegated. System permission checks and explicit commit/push/PR boundaries remain
+in place.
 
 ## Assumptions
 
